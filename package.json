@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "a backend at chai aur code channel - youtube",
   "main": "index.js",
-  "type": "module",
   "scripts": {
-    "test": "nodemon src/index.js"
+    "format": "prettier --write src/index.js",
+    "dev": "nodemon src/index.js"
   },
   "keywords": [
     "javascript",
@@ -16,5 +16,10 @@
   "license": "ISC",
   "devDependencies": {
     "prettier": "^3.5.3"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "mongoose": "^8.13.2"
   }
 }
