@@ -1,8 +1,20 @@
 require('dotenv').config();
 const connectDB = require('./db/index');
-
-
-connectDB();
+const express = require("express")
+const app = express();
+const port = process.env.PORT || 5000;
+;(async ()=>{
+    try{
+        await connectDB();
+        app.listen(port,function(){
+            console.log(`server is running on port localhost:${port}`)
+        })
+    }
+    catch(error){
+        console.log("MONGODB connect failed! ",error);
+    }
+    
+})()
 
 
 /*
