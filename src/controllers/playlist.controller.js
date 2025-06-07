@@ -64,7 +64,7 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
     },
     {
       $project: {
-        playlistName: 1,
+        name: 1,
         description: 1,
         videos: 1,
         thumbnail: 1,
@@ -118,7 +118,7 @@ const getPlaylistById = asyncHandler(async (req, res) => {
     },
     {
       $project: {
-        playlistName: 1,
+        name: 1,
         description: 1,
         videos: 1,
         owner: 1,
@@ -192,7 +192,7 @@ const updatePlaylist = asyncHandler(async (req, res) => {
     playlistId,
     {
       $set: {
-        playlistName: name,
+        name: name,
         description: description,
       },
     },
