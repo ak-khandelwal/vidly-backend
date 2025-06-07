@@ -1,13 +1,13 @@
 require('dotenv').config();
 const connectDB = require('./db/index');
-const express = require("express")
-const app = express();
+const app = require('./app');
 const port = process.env.PORT || 5000;
+
 ;(async ()=>{
     try{
         await connectDB();
         app.listen(port,function(){
-            console.log(`server is running on port localhost:${port}`)
+            console.log(`server is running on port http://localhost:${port}`)
         })
     }
     catch(error){
@@ -15,23 +15,3 @@ const port = process.env.PORT || 5000;
     }
     
 })()
-
-
-/*
-(async()=>{
-    try{
-        await mongoose.connect(`${process.env.MONGO_URI}`/`${DB_NAME}`);
-        app.on('error',(error)=>{
-            console.log("Error: ",error);
-            throw error
-        })
-        app.listen(process.env.PORT,()=>{
-            console.log(`app is listening to localhost:${process.env.PORT}`)
-        })
-    }
-    catch(err){
-        console.error("Error: ",err)
-        throw err
-    }
-})()
-*/

@@ -1,0 +1,9 @@
+1. validate user cannot subscribe to themself
+```js
+subscriptionSchema.pre('save', function (next) {
+  if (this.subscriber.equals(this.channel)) {
+    return next(new Error("User cannot subscribe to themselves"));
+  }
+  next();
+});
+```
