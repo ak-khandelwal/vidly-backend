@@ -1,41 +1,73 @@
 const mongoose = require("mongoose");
+const { Schema } = mongoose;
+const mongooseAggregatePaginate = require("mongoose-aggregate-paginate-v2");
 
-const videoSchema = new mongoose.Schema({
-    videoFile:{
-        type:String,
-        required:true
-    },
-    thumbnail:{
-        type:String,
-        required:true
-    }
-    ,title:{
-        type:String,
-        required:true,
-    },description:{
-        type:String,
-        required:true
-    },
-    duration:{
-        type:Number,
-        required:true
-    },
-    views:{
-        type:Number,
-        default:0
-    },
-    isPublished:{
-        type:Boolean,
-        default:true
-    },
-    owner:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"User"
-    }
-},{timestamps:true})
+// Define default tags as a constant that can be exported
+const DEFAULT_VIDEO_TAGS = [
+  "Music",
+  "Gaming",
+  "News",
+  "Sports",
+  "Entertainment",
+  "Education",
+  "Technology",
+];
 
+const videoSchema = new Schema(
+  {
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    description: {
+      type: String,
+    },
+    title: {
+      type: String,
+      required: true,
+    },
+    videoFile: {
+      type: String,
+      required: true,
+    },
+    thumbnail: {
+      type: String,
+      required: true,
+    },
+    duration: {
+      type: Number,
+      required: true,
+    },
+    views: {
+      type: Number,
+      default: 0,
+    },
+    isPublished: {
+      type: Boolean,
+      default: true,
+    },
+    tags: {
+      type: [String],
+      required: true,
+      validate: {
+        validator: function(tags) {
+          return tags && tags.length > 0;
+        },
+        message: "At least one tag is required"
+      }
+    },
+  },
+  { timestamps: true }
+);
 
-const Video = mongoose.model("Video",videoSchema)
+// Create text index for search
+videoSchema.index({ title: "text", description: "text" });
 
+// Create index for tag filtering
+videoSchema.index({ tags: 1 });
 
-module.exports = Video;
+videoSchema.plugin(mongooseAggregatePaginate);
+module.exports = {
+    Video: mongoose.model("Video", videoSchema),
+    DEFAULT_VIDEO_TAGS
+};
