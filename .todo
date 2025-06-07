@@ -7,3 +7,15 @@ subscriptionSchema.pre('save', function (next) {
   next();
 });
 ```
+## bug
+1. playlist dropdown not wokring when adding the video
+2. private video are seen in history
+
+## tesing checklist
+1. login/signup - error handling - avatar - cover image
+2. video upload - error handling
+3. watch history - clear all video, remove from history
+4. user profile
+5. video - like, dislike, save, share, comment, edit, unpublish, playlist, delete
+6. channel - home page, subscribers list
+7. user - username, email, fullname, password
