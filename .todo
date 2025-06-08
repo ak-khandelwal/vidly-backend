@@ -8,9 +8,10 @@ subscriptionSchema.pre('save', function (next) {
 });
 ```
 ## bug
-1. playlist dropdown not wokring when adding the video
-2. private video are seen in history
-3. how private, unpublish is being handle
+1. playlist dropdown not wokring when adding the video // done
+2. private video are seen in history // done
+3. how private, unpublish is being handle //done
+4. mobile nav fix
 
 ## tesing checklist
 1. login/signup - error handling - avatar - cover image

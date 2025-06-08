@@ -119,9 +119,9 @@ const loginUser = asyncHandler(async (req, res) => {
   );
 
   const options = {
-    sameSite: "None",
-    httpOnly: true,
-    secure: true,
+    sameSite: process.env.COOKIE_SAMESITE,
+    httpOnly: process.env.COOKIE_HTTPONLY === "true",
+    secure: process.env.COOKIE_SECURE === "true",
   };
 
   return res
@@ -154,10 +154,10 @@ const logoutUser = asyncHandler(async (req, res) => {
     }
   );
 
-  const options = {
-    sameSite: "None",
-    httpOnly: true,
-    secure: true,
+ const options = {
+    sameSite: process.env.COOKIE_SAMESITE,
+    httpOnly: process.env.COOKIE_HTTPONLY === "true",
+    secure: process.env.COOKIE_SECURE === "true",
   };
 
   return res
