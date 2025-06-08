@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
+const mongooseAggregatePaginate = require("mongoose-aggregate-paginate-v2");
 
 const watchHistorySchema = new Schema(
   {
@@ -27,6 +28,6 @@ const watchHistorySchema = new Schema(
 );
 
 watchHistorySchema.index({ user: 1, watchedAt: -1 });
-
+watchHistorySchema.plugin(mongooseAggregatePaginate);
 const WatchHistory = mongoose.model("WatchHistory", watchHistorySchema); 
 module.exports = { WatchHistory };

@@ -10,7 +10,7 @@ subscriptionSchema.pre('save', function (next) {
 ## bug
 1. playlist dropdown not wokring when adding the video
 2. private video are seen in history
-3. demo 
+3. how private, unpublish is being handle
 
 ## tesing checklist
 1. login/signup - error handling - avatar - cover image

@@ -401,38 +401,105 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
 });
 
 const getWatchHistory = asyncHandler(async (req, res) => {
-  const { page = 1, limit = 10 } = req.query;
-  const skip = (page - 1) * limit;
+    const { page = 1, limit = 10 } = req.query;
+    const userId = req.user._id; // Get user ID once
 
-  const history = await WatchHistory.find({ user: req.user._id })
-    .sort({ watchedAt: -1 })
-    .skip(skip)
-    .limit(parseInt(limit))
-    .populate({
-      path: 'video',
-      select: 'title description videoFile thumbnail views duration owner tags',
-      populate: {
-        path: 'owner',
-        select: 'userName avatar'
-      }
-    });
+    // Convert limit to a number
+    const actualLimit = parseInt(limit, 10);
+    const actualPage = parseInt(page, 10);
 
-  const totalHistory = await WatchHistory.countDocuments({ user: req.user._id });
-
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
+    const aggregateQuery = WatchHistory.aggregate([
         {
-          history,
-          totalHistory,
-          currentPage: parseInt(page),
-          totalPages: Math.ceil(totalHistory / limit)
+            $match: {
+                user: userId // Match watch history records for the current user
+            }
         },
-        "Watch history fetched successfully"
-      )
-    );
+        {
+            $sort: {
+                watchedAt: -1 // Sort by most recently watched
+            }
+        },
+        {
+            $lookup: { // Populate video details
+                from: 'videos', // The collection name for videos (usually plural of model name 'Video')
+                localField: 'video',
+                foreignField: '_id',
+                as: 'video'
+            }
+        },
+        {
+            $unwind: '$video' // Deconstructs the video array, assuming 'video' is single object
+        },
+        {
+            $lookup: { // Populate owner details of the video
+                from: 'users', // The collection name for users
+                localField: 'video.owner',
+                foreignField: '_id',
+                as: 'video.owner'
+            }
+        },
+        {
+            $unwind: '$video.owner' // Deconstructs the owner array
+        },
+        {
+            $match: {
+                'video.isPublished': true // <-- HERE'S THE NEW LOGIC
+            }
+        },
+        {
+            $project: { // Select only the fields you need
+                _id: 1, // Include the _id of the watch history document
+                watchedAt: 1, // Include watchedAt if needed
+                video: {
+                    _id: '$video._id',
+                    title: '$video.title',
+                    description: '$video.description',
+                    videoFile: '$video.videoFile',
+                    thumbnail: '$video.thumbnail',
+                    views: '$video.views',
+                    duration: '$video.duration',
+                    tags: '$video.tags',
+                    owner: {
+                        _id: '$video.owner._id',
+                        userName: '$video.owner.userName',
+                        avatar: '$video.owner.avatar'
+                    }
+                }
+            }
+        }
+    ]);
+
+    // Use mongooseAggregatePaginate-v2
+    const options = {
+        page: actualPage,
+        limit: actualLimit,
+        customLabels: {
+            docs: 'history', // Rename 'docs' to 'history'
+            totalDocs: 'totalHistory' // Rename 'totalDocs' to 'totalHistory'
+        }
+    };
+
+    const result = await WatchHistory.aggregatePaginate(aggregateQuery, options);
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                {
+                    history: result.history,
+                    totalHistory: result.totalHistory,
+                    currentPage: result.page,
+                    totalPages: result.totalPages,
+                    hasNextPage: result.hasNextPage,
+                    hasPrevPage: result.hasPrevPage,
+                    nextPage: result.nextPage,
+                    prevPage: result.prevPage,
+                    limit: result.limit
+                },
+                "Watch history fetched successfully"
+            )
+        );
 });
 
 module.exports = {
